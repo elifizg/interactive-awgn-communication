@@ -30,7 +30,7 @@ Both TX encoder and RX decoder are Transformer-based neural networks trained end
 |---|---|
 | Symbol Error Rate (SER) | **29.16%** |
 | Block Error Rate (BLER) | **69.70%** |
-| Training SNR | 0 dB (vector-level: E[||x||²]=1, E[||ε||²]=MSG_LEN×σ²=1) |
+| Training SNR | 0 dB (vector-level: E[\|\|x\|\|²] = 1, E[\|\|ε\|\|²] = MSG_LEN × σ² = 1) |
 | Training epochs | 65 (early stop) |
 
 ### Baseline vs Upgraded Comparison
