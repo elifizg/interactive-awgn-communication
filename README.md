@@ -3,8 +3,6 @@
 **CS515 Deep Learning | Homework 4, Part 2 (Bonus)**
 Sabancı University
 
-**GitHub:** [interactive-awgn-communication](https://github.com/elifizg/interactive-awgn-communication)
-
 A Transformer-based end-to-end learned communication system over an Additive White Gaussian Noise (AWGN) channel with noiseless feedback. The transmitter (TX) and receiver (RX) are jointly trained to design an optimal interactive communication protocol from scratch.
 
 ---
