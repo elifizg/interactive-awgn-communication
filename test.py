@@ -159,9 +159,11 @@ def ser_vs_snr(
     """
     Evaluate SER and BLER across a range of SNR values.
 
-    SNR (dB) = 10 * log10(signal power / noise power) = 10 * log10(1 / σ²)
-    since the signal is power-normalised to 1. For each SNR, a new
-    CommunicationSystem is instantiated with the corresponding σ², the
+    SNR (dB) = 10 * log10(signal power / noise power)
+             = 10 * log10(1 / (MSG_LEN * σ²))
+    under the vector-level power convention, since ||x||² is normalised
+    to 1 and the total AWGN noise power is MSG_LEN * σ². For each SNR,
+    a new CommunicationSystem is instantiated with the corresponding σ², the
     trained weights are loaded, and the system is evaluated.
 
     This shows how robust the learned communication protocol is to
@@ -180,7 +182,7 @@ def ser_vs_snr(
     dict with 'snr_db', 'ser', 'bler' lists
     """
     # Training SNR for reference
-    train_snr_db = 10 * np.log10(1.0 / config.SIGMA2)
+    train_snr_db = 10 * np.log10(1.0 / (config.MSG_LEN * config.SIGMA2))
 
     ser_list  = []
     bler_list = []
@@ -389,8 +391,6 @@ def plot_baseline_vs_upgraded_snr(
         ("Upgraded (d=128, L=4)", upgraded_system, "#DC2626"),
     ]
 
-    train_snr_db = 10 * np.log10(1.0 / config.SIGMA2)
-
     for label, sys, color in configs:
         if sys is None:
             continue
@@ -475,10 +475,8 @@ def plot_constellation(
     Scatter plot of the coded symbols x^(t) produced by the TX encoder
     at round `round_idx`, coloured by the first symbol of the message.
 
-    This reveals the geometric structure the encoder has learned to embed
-    messages into the signal space. A well-trained encoder should produce
-    clearly separated clusters for different symbols, analogous to a
-    learned constellation diagram in classical digital communications.
+    This reveals whether the encoder has learned a symbol-dependent
+    geometric structure in the signal space.
 
     Parameters
     ----------

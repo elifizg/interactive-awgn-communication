@@ -28,27 +28,29 @@ Both TX encoder and RX decoder are Transformer-based neural networks trained end
 
 | Metric | Value |
 |---|---|
-| Symbol Error Rate (SER) | **28.97%** |
-| Block Error Rate (BLER) | **69.77%** |
+| Symbol Error Rate (SER) | **29.16%** |
+| Block Error Rate (BLER) | **69.70%** |
 | Training SNR | 0 dB (vector-level: E[||x||²]=1, E[||ε||²]=MSG_LEN×σ²=1) |
 | Training epochs | 65 (early stop) |
 
 ### Baseline vs Upgraded Comparison
 
-| Config | Params | Val SER | Test SER | Test BLER |
-|---|---|---|---|---|
-| Baseline (d=64, L=2, H=4) | 152,521 | 28.97% | 29.14% | 70.22% |
-| Upgraded (d=128, L=4, H=8) | 1,129,865 | **28.96%** | **28.97%** | **69.77%** |
+| Config | Params | Val SER | Val BLER | Test / 0 dB SER | Test / 0 dB BLER |
+|---|---:|---:|---:|---:|---:|
+| Baseline (d=64, L=2, H=4) | 152,521 | 28.97% | 69.77% | 29.16%* | 70.08%* |
+| Upgraded (d=128, L=4, H=8) | 1,129,865 | **28.96%** | **69.03%** | **29.16%** | **69.70%** |
 
-The validation performance gap is marginal (0.01 percentage points), and the test SER improves only from 29.14% to 28.97% (0.17 percentage points). At the vector-level training SNR of 0 dB, both configurations achieve very similar performance, suggesting that the noisy channel and limited communication budget (T=4 rounds, code rate R=1) are stronger bottlenecks than model capacity.
+\* Baseline test SER/BLER are taken from the 0 dB point of the SNR comparison sweep in the latest run.
+
+The validation performance gap is marginal, and the test performance of the two configurations remains very close. In the latest run, the upgraded model achieves 29.16% SER and 69.70% BLER, while the baseline remains in the same approximately 29% SER range. At the vector-level training SNR of 0 dB, increasing model capacity does not provide a meaningful performance gain, suggesting that the noisy channel and limited communication budget (T=4 rounds, code rate R=1) are stronger bottlenecks than model capacity.
 
 ### Per-position SER (Upgraded)
 
 | Position | SER |
 |---|---:|
-| Position 1 | 29.21% |
-| Position 2 | 28.75% |
-| Position 3 | 28.93% |
+| Position 1 | 29.85% |
+| Position 2 | 29.19% |
+| Position 3 | 28.61% |
 | Position 4 | 29.01% |
 
 The per-position errors are close to the overall SER, indicating that the model does not strongly favor or neglect any specific symbol position.
@@ -61,16 +63,16 @@ The SNR sweep is evaluated with randomly sampled test messages at each SNR point
 
 | SNR (dB) | σ² | Upgraded SER | Upgraded BLER | Baseline SER | Baseline BLER |
 |---|---:|---:|---:|---:|---:|
-| −5 | 0.7906 | 60.26% | 96.16% | 60.74% | 96.12% |
-| −3 | 0.4988 | 50.55% | 91.34% | 49.54% | 91.22% |
-| −1 | 0.3147 | 36.27% | 79.16% | 37.12% | 80.56% |
-| **0** | **0.2500** | **29.20%** | **69.86%** | **29.14%** | **70.22%** |
-| 1 | 0.1986 | 22.29% | 58.58% | 21.88% | 58.74% |
-| 2 | 0.1577 | 15.03% | 44.40% | 15.46% | 45.44% |
-| 3 | 0.1253 | 9.68% | 31.30% | 10.08% | 32.62% |
-| 5 | 0.0791 | 2.86% | 10.54% | 3.27% | 12.08% |
-| 7 | 0.0499 | 0.49% | 1.94% | 0.87% | 3.42% |
-| 10 | 0.0250 | 0.03% | 0.14% | 0.13% | 0.50% |
+| −5 | 0.7906 | 60.84% | 96.42% | 60.44% | 96.24% |
+| −3 | 0.4988 | 50.28% | 91.20% | 50.06% | 90.92% |
+| −1 | 0.3147 | 36.68% | 79.94% | 36.48% | 79.14% |
+| **0** | **0.2500** | **29.36%** | **70.36%** | **29.16%** | **70.08%** |
+| 1 | 0.1986 | 22.19% | 58.84% | 22.04% | 58.30% |
+| 2 | 0.1577 | 15.17% | 43.86% | 15.72% | 46.56% |
+| 3 | 0.1253 | 9.31% | 30.70% | 10.16% | 32.48% |
+| 5 | 0.0791 | 2.80% | 10.16% | 3.21% | 11.90% |
+| 7 | 0.0499 | 0.47% | 1.78% | 0.74% | 2.88% |
+| 10 | 0.0250 | 0.05% | 0.20% | 0.13% | 0.54% |
 
 ---
 
