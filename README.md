@@ -3,9 +3,7 @@
 **CS515 Deep Learning | Homework 4, Part 2 (Bonus)**
 Sabancı University
 
-**GitHub:** [interactive-awgn-communication](https://github.com/elifizg/interactive-awgn-communication)
-
-A Transformer-based end-to-end learned communication system over an Additive White Gaussian Noise (AWGN) channel with noiseless feedback. The transmitter (TX) and receiver (RX) are jointly trained to design an optimal interactive communication protocol from scratch.
+A Transformer-based end-to-end learned communication system over an Additive White Gaussian Noise (AWGN) channel with noiseless feedback. The transmitter (TX) and receiver (RX) are jointly trained to learn an effective interactive communication protocol from scratch.
 
 ---
 
@@ -39,10 +37,21 @@ Both TX encoder and RX decoder are Transformer-based neural networks trained end
 
 | Config | Params | Val SER | Test SER | Test BLER |
 |---|---|---|---|---|
-| Baseline (d=64, L=2, H=4) | 152,521 | 28.97% | ~28.9% | ~70.2% |
+| Baseline (d=64, L=2, H=4) | 152,521 | 28.97% | 29.14% | 70.22% |
 | Upgraded (d=128, L=4, H=8) | 1,129,865 | **28.96%** | **28.97%** | **69.77%** |
 
-The validation performance gap is marginal (0.01 percentage points), and the test SER difference is also small (~28.9% vs. 28.97%), suggesting that model capacity is not the main bottleneck. At the vector-level training SNR of 0 dB, both configurations achieve similar performance, suggesting that the noisy channel and limited communication budget (T=4 rounds, code rate R=1) are stronger bottlenecks than model capacity.
+The validation performance gap is marginal (0.01 percentage points), and the test SER improves only from 29.14% to 28.97% (0.17 percentage points). At the vector-level training SNR of 0 dB, both configurations achieve very similar performance, suggesting that the noisy channel and limited communication budget (T=4 rounds, code rate R=1) are stronger bottlenecks than model capacity.
+
+### Per-position SER (Upgraded)
+
+| Position | SER |
+|---|---:|
+| Position 1 | 29.21% |
+| Position 2 | 28.75% |
+| Position 3 | 28.93% |
+| Position 4 | 29.01% |
+
+The per-position errors are close to the overall SER, indicating that the model does not strongly favor or neglect any specific symbol position.
 
 ### SER vs SNR
 
@@ -50,18 +59,18 @@ SNR values use the vector-level convention: SNR = E[||x||²] / E[||ε||²] = 1 /
 The σ² column shows the per-dimension noise variance used in the AWGN channel.
 The SNR sweep is evaluated with randomly sampled test messages at each SNR point, so the 0 dB value may differ slightly from the main test-set estimate above.
 
-| SNR (dB) | σ² | Upgraded SER | Baseline SER |
-|---|---:|---:|---:|
-| −5 | 0.7906 | 60.3% | 60.7% |
-| −3 | 0.4988 | 50.6% | 49.5% |
-| −1 | 0.3147 | 36.3% | 37.1% |
-| **0** | **0.2500** | **29.2%** ← training SNR | **29.1%** |
-| 1 | 0.1986 | 22.3% | 21.9% |
-| 2 | 0.1577 | 15.0% | 15.5% |
-| 3 | 0.1253 | 9.7% | 10.1% |
-| 5 | 0.0791 | 2.9% | 3.3% |
-| 7 | 0.0499 | 0.49% | 0.87% |
-| 10 | 0.0250 | 0.03% | 0.13% |
+| SNR (dB) | σ² | Upgraded SER | Upgraded BLER | Baseline SER | Baseline BLER |
+|---|---:|---:|---:|---:|---:|
+| −5 | 0.7906 | 60.26% | 96.16% | 60.74% | 96.12% |
+| −3 | 0.4988 | 50.55% | 91.34% | 49.54% | 91.22% |
+| −1 | 0.3147 | 36.27% | 79.16% | 37.12% | 80.56% |
+| **0** | **0.2500** | **29.20%** | **69.86%** | **29.14%** | **70.22%** |
+| 1 | 0.1986 | 22.29% | 58.58% | 21.88% | 58.74% |
+| 2 | 0.1577 | 15.03% | 44.40% | 15.46% | 45.44% |
+| 3 | 0.1253 | 9.68% | 31.30% | 10.08% | 32.62% |
+| 5 | 0.0791 | 2.86% | 10.54% | 3.27% | 12.08% |
+| 7 | 0.0499 | 0.49% | 1.94% | 0.87% | 3.42% |
+| 10 | 0.0250 | 0.03% | 0.14% | 0.13% | 0.50% |
 
 ---
 
@@ -82,7 +91,9 @@ interactive-awgn-communication/
 ├── requirements.txt
 ├── README.md
 │
-├── checkpoints/        # Saved model weights 
+├── checkpoints/        # .pt checkpoint files are generated automatically during training.
+│   │                   # Pretrained model weights are not included in the submission.
+│   │                   # Run training first before evaluation.
 │   ├── best_system_history.json
 │   ├── best_system_baseline_history.json
 │   └── best_system_upgraded_history.json
@@ -114,6 +125,9 @@ pip install -r requirements.txt
 
 ### Train
 
+Note: Pretrained `.pt` checkpoint files are not included in this repository.
+Before running `test.py`, train the model first:
+
 ```bash
 # Train baseline config
 python train.py --config baseline --epochs 100
@@ -131,7 +145,7 @@ python train.py --config upgraded --epochs 3 --n_train 20 --n_val 10
 # Full evaluation with all figures
 python test.py --n_test 10000
 
-# With baseline vs upgraded comparison (no extra flag needed)
+# With baseline vs upgraded comparison
 python test.py --n_test 10000 --compare
 
 # Skip SNR sweep (faster)
