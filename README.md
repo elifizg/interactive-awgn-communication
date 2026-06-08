@@ -35,14 +35,14 @@ Both TX encoder and RX decoder are Transformer-based neural networks trained end
 
 ### Baseline vs Upgraded Comparison
 
-| Config | Params | Val SER | Val BLER | Test / 0 dB SER | Test / 0 dB BLER |
-|---|---:|---:|---:|---:|---:|
-| Baseline (d=64, L=2, H=4) | 152,521 | 28.97% | 69.77% | 29.16%* | 70.08%* |
-| Upgraded (d=128, L=4, H=8) | 1,129,865 | **28.96%** | **69.03%** | **29.16%** | **69.70%** |
+| Config | Params | Val SER | Val BLER | Main Test SER | Main Test BLER | 0 dB Sweep SER | 0 dB Sweep BLER |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Baseline (d=64, L=2, H=4) | 152,521 | 28.97% | 69.77% | — | — | 29.16% | 70.08% |
+| Upgraded (d=128, L=4, H=8) | 1,129,865 | **28.96%** | **69.03%** | **29.16%** | **69.70%** | 29.36% | 70.36% |
 
-\* Baseline test SER/BLER are taken from the 0 dB point of the SNR comparison sweep in the latest run.
+The upgraded model was evaluated directly on 10,000 randomly sampled test messages, giving 29.16% SER and 69.70% BLER. The baseline checkpoint is reported from the 0 dB point of the baseline-vs-upgraded SNR comparison sweep. Because both the main test and SNR sweep use random online message sampling, the 0 dB sweep value can differ slightly from the standalone main test estimate.
 
-The validation performance gap is marginal, and the test performance of the two configurations remains very close. In the latest run, the upgraded model achieves 29.16% SER and 69.70% BLER, while the baseline remains in the same approximately 29% SER range. At the vector-level training SNR of 0 dB, increasing model capacity does not provide a meaningful performance gain, suggesting that the noisy channel and limited communication budget (T=4 rounds, code rate R=1) are stronger bottlenecks than model capacity.
+The validation performance gap is marginal, and the test performance of the two configurations remains very close. In the latest run, the upgraded model achieves 29.16% SER and 69.70% BLER on the main test evaluation, while the baseline reaches 29.16% SER and 70.08% BLER at the 0 dB comparison point. At the vector-level training SNR of 0 dB, increasing model capacity does not provide a meaningful performance gain, suggesting that the noisy channel and limited communication budget (T=4 rounds, code rate R=1) are stronger bottlenecks than model capacity.
 
 ### Per-position SER (Upgraded)
 
